@@ -1,0 +1,21 @@
+{
+  "name": "@veluga/picmemebot",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Telegram bot for picture meme",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "ts-node src",
+    "build": "tsc -P tsconfig.json"
+  },
+  "author": "Vladislav <vlad@velu.ga> (https://velu.ga/)",
+  "license": "ISC",
+  "dependencies": {
+    "@veluga/telegram": "0.0.0-alpha.2"
+  },
+  "devDependencies": {
+    "@types/node": "18.7.13",
+    "ts-node": "10.9.1",
+    "typescript": "4.8.2"
+  }
+}
