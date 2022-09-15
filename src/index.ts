@@ -27,7 +27,7 @@ bot.use(new InlineQueryManager({
             };
         }
 
-        const results = storage.find(text).map(item => ({
+        const results = storage.find(text, from).map(item => ({
             type: 'photo',
             id: item.id,
             photo_file_id: item.file,
@@ -38,10 +38,6 @@ bot.use(new InlineQueryManager({
             cache_time: 30,
             results,
         };
-    },
-
-    onResultChosen(query) {
-        console.log('chosen', query);
     },
 }));
 
@@ -57,7 +53,9 @@ bot.on('message', async message => {
 
     if (message.photo) {
         try {
-            await addMeme(context, message);
+            if (await addMeme(context, message)) {
+                bot.sendMessageUniversal(message, 'text', { text: i18n(context, 'successfully_added') });
+            }
         } catch (e) {
             let text: string = `Error: ${(e as Error).message}`;
 

@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import type { User } from '@veluga/telegram';
 
 import type { IMeme } from '../typings/meme';
 
@@ -33,9 +34,14 @@ export class Storage {
         this.reload();
     }
 
-    public add(meme: IMeme) {
+    public add(meme: IMeme): boolean {
+        const isDuplicate = this.content.items.find(item => item.file === meme.file);
+
+        if (isDuplicate) return false;
+
         this.content.items.push(meme);
         this.save();
+        return true;
     }
 
     public accept(id: string) {
@@ -54,13 +60,13 @@ export class Storage {
         this.save();
     }
 
-    public find(query: string): IMeme[] {
+    public find(query: string, from: User): IMeme[] {
         const result: Set<IMeme> = new Set<IMeme>();
 
         const words = query.split(' ');
 
         for (const meme of this.content.items) {
-            if (!meme.accepted) continue;
+            if (!meme.accepted && meme.author.id !== from.id) continue;
 
             for (const word of words) {
                 for (const tag of meme.tags) {

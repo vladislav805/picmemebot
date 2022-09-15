@@ -6,4 +6,5 @@ export const en: Record<I18nKey, string> = {
     error_no_photo_specified: 'No photo specified.',
     error_photo_low_quality: `Photo in low resolution. The minimum allowable size on the smallest side of the photo is ${PHOTO_SIDE_SIZE_LOW_QUALITY}px.`,
     error_no_specified_tags: 'No tags specified. In a message with a photo in the text, indicate the keywords (tags) by which this meme can be found. Each tag on a new line.',
+    successfully_added: 'Meme added. At first it is available only to you, but after verification it will be available to everyone.',
 };

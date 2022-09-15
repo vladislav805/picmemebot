@@ -22,11 +22,11 @@ export async function saveMeme(context: IContext, file: string, tags: string[]):
         date: Date.now(),
     };
 
-    context.storage.add(meme);
+    const result = context.storage.add(meme);
 
-    if (!isModerator) {
+    if (result && !isModerator) {
         sendAcceptation(context, meme);
     }
 
-    return true;
+    return result;
 }
