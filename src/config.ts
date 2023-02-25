@@ -8,4 +8,4 @@ export const moderatorIds: number[] = [
 /**
  * Размер меньшей стороны картинки, с которой считается, что пикча низкого качества
  */
-export const PHOTO_SIDE_SIZE_LOW_QUALITY: number = 400;
+export const PHOTO_SIDE_SIZE_LOW_QUALITY: number = 200;
