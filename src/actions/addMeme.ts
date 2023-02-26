@@ -31,6 +31,10 @@ export async function addMeme(context: IContext, message: Message): Promise<bool
         minSideSize = Math.min(maxSize.width, maxSize.height);
         type = 'photo';
         fileId = maxSize.file_id;
+
+        if (minSideSize === undefined || minSideSize < PHOTO_SIDE_SIZE_LOW_QUALITY) {
+            throw new BotError(ERROR_PHOTO_LOW_QUALITY);
+        }
     } else if (animation !== undefined) {
         minSideSize = Math.min(animation.width, animation.height);
         type = 'mpeg4_gif';
@@ -39,10 +43,6 @@ export async function addMeme(context: IContext, message: Message): Promise<bool
 
     if (type === undefined || fileId === undefined) {
         return false;
-    }
-
-    if (minSideSize === undefined || minSideSize < PHOTO_SIDE_SIZE_LOW_QUALITY) {
-        throw new BotError(ERROR_PHOTO_LOW_QUALITY);
     }
 
     return saveMeme(context, type, fileId, tags);

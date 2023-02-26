@@ -26,7 +26,7 @@ export async function saveMeme(context: IContext, type: MemeType, file: string, 
     const result = context.storage.add(meme);
 
     if (result && !isModerator) {
-        sendAcceptation(context, meme);
+        sendAcceptation(context, type, meme);
     }
 
     return result;
