@@ -1,5 +1,5 @@
 import type { Bot, User } from '@veluga/telegram';
-import type { Storage } from '../utils/storage';
+import type { Storage } from '../utils/Storage';
 
 export interface IContext {
     from: User;

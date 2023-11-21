@@ -6,44 +6,37 @@ import {
     ERROR_NOT_ENOUGH_TAGS,
     ERROR_PHOTO_LOW_QUALITY,
 } from '../errors';
-import type { IContext } from '../typings/context';
-import type { MemeType } from '../typings/meme';
-import { getMaxPhotoSize } from '../utils/getMaxPhotoSize';
+import type { IContext } from '../typings/IContext';
+import { getMediaInfoByMessage } from '../utils/getMediaInfoByMessage';
+import { parseTags } from '../utils/parseTags';
 import { saveMeme } from './saveMeme';
 
-export async function addMeme(context: IContext, message: Message): Promise<boolean> {
-    const { photo, animation, chat, caption } = message;
-
+export async function addMeme(
+    context: IContext,
+    message: Message,
+): Promise<boolean> {
     // Принимаем пикчи только в личных сообщениях с ботом
-    if (chat.type !== 'private') throw new BotError(ERROR_ACCEPT_ONLY_PRIVATE_CHAT);
-
-    let type: MemeType | undefined = undefined;
-    let fileId: string | undefined = undefined;
-    let minSideSize: number | undefined = undefined;
-
-    const tags = (caption ?? '').trim().toLowerCase().split('\n').map(line => line.trim()).filter(Boolean);
-
-    if (tags.length === 0) throw new BotError(ERROR_NOT_ENOUGH_TAGS);
-
-    if (photo !== undefined) {
-        const maxSize = getMaxPhotoSize(photo ?? animation?.thumb);
-
-        minSideSize = Math.min(maxSize.width, maxSize.height);
-        type = 'photo';
-        fileId = maxSize.file_id;
-
-        if (minSideSize === undefined || minSideSize < PHOTO_SIDE_SIZE_LOW_QUALITY) {
-            throw new BotError(ERROR_PHOTO_LOW_QUALITY);
-        }
-    } else if (animation !== undefined) {
-        minSideSize = Math.min(animation.width, animation.height);
-        type = 'mpeg4_gif';
-        fileId = animation.file_id;
+    if (message.chat.type !== 'private') {
+        throw new BotError(ERROR_ACCEPT_ONLY_PRIVATE_CHAT);
     }
 
-    if (type === undefined || fileId === undefined) {
+    const tags = parseTags(message.caption);
+
+    if (tags.length === 0) {
+        throw new BotError(ERROR_NOT_ENOUGH_TAGS);
+    }
+
+    const info = getMediaInfoByMessage(message);
+
+    // Не нашли медиа
+    if (info === undefined) {
         return false;
     }
 
-    return saveMeme(context, type, fileId, tags);
+    // Изображения проверяем на размер
+    if (info.type === 'photo' && Math.min(info.width, info.height) < PHOTO_SIDE_SIZE_LOW_QUALITY) {
+        throw new BotError(ERROR_PHOTO_LOW_QUALITY);
+    }
+
+    return saveMeme(context, info, tags);
 }

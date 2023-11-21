@@ -1,24 +1,27 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "ES6",
         "moduleResolution": "node",
         "target": "es2020",
         "strict": true,
-        "sourceMap": false,
+        "sourceMap": true,
         "removeComments": false,
         "outDir": "dist",
         "resolveJsonModule": true,
         "allowJs": false,
-        "importsNotUsedAsValues": "error",
+        "verbatimModuleSyntax": true,
         "noImplicitReturns": true,
         "noImplicitAny": true,
         "noImplicitOverride": true,
+        "noEmit": true,
         "types": [
-            "node"
+            "node",
+            "jest"
         ],
         "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "esModuleInterop": true,
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*"

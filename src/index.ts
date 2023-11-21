@@ -1,39 +1,23 @@
-import { Bot, InlineQueryManager, InlineQueryResult, User } from '@veluga/telegram';
+import { Bot, InlineQueryManager } from '@veluga/telegram';
 
-import { addMeme } from './actions/addMeme';
+import { messageRouter } from './actions/messageRouter';
 import { moderatorIds } from './config';
 import { BotError, getErrorDescription } from './errors';
-import { i18n } from './i18n';
-import type { IContext } from './typings/context';
-import type { MemeType } from './typings/meme';
-import { Storage } from './utils/storage';
+import type { IContext } from './typings/IContext';
+import { renderResults } from './utils/renderResults';
+import { Storage } from './utils/Storage';
 
 const bot = new Bot({
     secret: process.env.BOT_SECRET as string,
 });
 
-const storage = new Storage('test.json');
-
-function createContext({ from, query = '' }: { from: User; query?: string }): IContext {
-    return { bot, from, query, storage };
-}
-
-const fileIdKey: Record<MemeType, string> = {
-    photo: 'photo_file_id',
-    mpeg4_gif: 'mpeg4_file_id',
-};
+const storage = new Storage(process.env.BOT_STORAGE_PATH as string);
 
 const ITEMS_PER_PAGE = 40;
 
 bot.use(new InlineQueryManager({
-    async onInlineQuery({ id, offset, query, from }) {
+    async onInlineQuery({ offset, query, from }) {
         const text = query.trim();
-
-        if (!text) {
-            return {
-                results: [],
-            };
-        }
 
         const currentOffset = Number(offset);
 
@@ -48,50 +32,45 @@ bot.use(new InlineQueryManager({
         return {
             is_personal: false,
             cache_time: 30,
-            results: results.map(item => ({
-                type: item.type,
-                id: item.id,
-                [fileIdKey[item.type]]: item.file,
-            }) as unknown as InlineQueryResult),
+            results: renderResults(results),
             next_offset: nextOffset !== undefined ? String(nextOffset) : undefined,
         };
     },
+
+    onResultChosen(query) {
+        storage.countClick(query.result_id);
+    }
 }));
 
 bot.on('message', async message => {
-    if (message.forward_from) return;
+    const context: IContext = { bot, from: message.from!, query: '', storage };
 
-    const context: IContext = createContext({ from: message.from! });
+    try {
+        await messageRouter(context, message);
+    } catch (e) {
+        let text: string = `Error: ${(e as Error).message}`;
 
-    if (message.text === '/start') {
-        bot.sendMessageUniversal(message, 'text', { text: i18n(context, 'start') });
-        return;
-    }
-
-    if (message.photo !== undefined || message.animation !== undefined) {
-        try {
-            if (await addMeme(context, message)) {
-                bot.sendMessageUniversal(message, 'text', { text: i18n(context, 'successfully_added') });
-            }
-        } catch (e) {
-            let text: string = `Error: ${(e as Error).message}`;
-
-            if (e instanceof BotError) {
-                text = getErrorDescription(context, e);
-            }
-
-            bot.sendMessageUniversal(message, 'text', { text });
+        if (e instanceof BotError) {
+            text = getErrorDescription(context, e);
         }
+
+        bot.sendMessageUniversal(message, 'text', { text });
     }
 });
 
 bot.on('callback_query', query => {
-    if (!moderatorIds.includes(query.from.id)) return;
+    if (!moderatorIds.includes(query.from.id)) {
+        return;
+    }
 
     const [command, fileId] = (query.data ?? '').split('/');
 
-    const chat_id = query.message!.chat.id;
-    const message_id = query.message!.message_id
+    if (query.message === undefined) {
+        return;
+    }
+
+    const chat_id = query.message.chat.id;
+    const message_id = query.message.message_id;
 
     switch (command) {
         case 'accept': {
@@ -109,3 +88,4 @@ bot.on('callback_query', query => {
 });
 
 bot.startPolling();
+console.log('Bot started');
