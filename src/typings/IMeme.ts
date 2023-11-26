@@ -1,6 +1,6 @@
 import type { IMemeAuthor } from './IMemeAuthor';
 
-export type MemeType = 'photo' | 'mpeg4_gif';
+export type MemeType = 'photo' | 'mpeg4_gif' | 'video';
 
 export interface IMeme {
     id: string;
@@ -10,6 +10,7 @@ export interface IMeme {
     date: number;
     file: string;
     fileUnique: string;
+    duration?: number;
     accepted: boolean;
     clicks: number;
 }

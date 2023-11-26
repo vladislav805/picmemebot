@@ -4,7 +4,7 @@ import {
     BotError,
     ERROR_ACCEPT_ONLY_PRIVATE_CHAT,
     ERROR_NOT_ENOUGH_TAGS,
-    ERROR_PHOTO_LOW_QUALITY,
+    ERROR_MEDIA_LOW_QUALITY,
 } from '../errors';
 import type { IContext } from '../typings/IContext';
 import { getMediaInfoByMessage } from '../utils/getMediaInfoByMessage';
@@ -33,9 +33,12 @@ export async function addMeme(
         return false;
     }
 
-    // Изображения проверяем на размер
-    if (info.type === 'photo' && Math.min(info.width, info.height) < PHOTO_SIDE_SIZE_LOW_QUALITY) {
-        throw new BotError(ERROR_PHOTO_LOW_QUALITY);
+    // Изображения и видео проверяем на размер
+    if (
+        (info.type === 'photo' || info.type === 'video') &&
+        Math.min(info.width, info.height) < PHOTO_SIDE_SIZE_LOW_QUALITY
+    ) {
+        throw new BotError(ERROR_MEDIA_LOW_QUALITY);
     }
 
     return saveMeme(context, info, tags);
