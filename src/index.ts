@@ -13,7 +13,8 @@ const bot = new Bot({
 
 const storage = new Storage(process.env.BOT_STORAGE_PATH as string);
 
-const ITEMS_PER_PAGE = 40;
+const CACHE_TIME = 20;
+const ITEMS_PER_PAGE = 50;
 
 bot.use(new InlineQueryManager({
     async onInlineQuery({ offset, query, from }) {
@@ -31,7 +32,7 @@ bot.use(new InlineQueryManager({
 
         return {
             is_personal: false,
-            cache_time: 30,
+            cache_time: CACHE_TIME,
             results: renderResults(results),
             next_offset: nextOffset !== undefined ? String(nextOffset) : undefined,
         };

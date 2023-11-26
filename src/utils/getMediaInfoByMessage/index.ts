@@ -34,5 +34,18 @@ export function getMediaInfoByMessage(message: Telegram.Message): IMediaInfo | u
         };
     }
 
+    if (message.video !== undefined) {
+        const { file_id, file_unique_id, width, height, duration } = message.video;
+
+        return {
+            type: 'video',
+            fileId: file_id,
+            fileUniqueId: file_unique_id,
+            width,
+            height,
+            duration,
+        };
+    }
+
     return undefined;
 }

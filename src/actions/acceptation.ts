@@ -46,5 +46,16 @@ export async function sendAcceptation(
             });
             break;
         }
+
+        case 'video': {
+            context.bot.client.sendVideo({
+                chat_id,
+                video: meme.file,
+                caption,
+                parse_mode: 'HTML',
+                reply_markup,
+            });
+            break;
+        }
     }
 }

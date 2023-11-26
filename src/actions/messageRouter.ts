@@ -32,10 +32,11 @@ export async function messageRouter(
         return editMeme(context, message);
     }
 
-    // Прислали фотографию или GIF
+    // Прислали фотографию, GIF или видео
     if (
         message.photo !== undefined ||
-        message.animation !== undefined
+        message.animation !== undefined ||
+        message.video !== undefined
     ) {
         // Прислано через бота?
         if (message.via_bot !== undefined) {

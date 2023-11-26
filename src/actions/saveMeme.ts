@@ -21,6 +21,7 @@ export async function saveMeme(
         file: media.fileId,
         fileUnique: media.fileUniqueId,
         accepted: isModerator,
+        duration: media.type === 'video' ? media.duration : undefined,
         author: {
             id: context.from.id,
             username: context.from.username,
