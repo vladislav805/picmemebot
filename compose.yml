@@ -1,0 +1,16 @@
+services:
+  picmemebot:
+    image: ghcr.io/vladislav805/picmemebot:latest
+    container_name: picmemebot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      BOT_STORAGE_PATH: /app/data/storage.json
+    volumes:
+      - ./test.json:/app/data/storage.json
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

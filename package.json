@@ -12,7 +12,7 @@
   "author": "Vladislav <vlad@velu.ga> (https://velu.ga/)",
   "license": "ISC",
   "dependencies": {
-    "@veluga/telegram": "0.0.0-alpha.2"
+    "@veluga/telegram": "0.3.2"
   },
   "devDependencies": {
     "@types/jest": "29.5.8",

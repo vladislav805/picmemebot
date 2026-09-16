@@ -1,0 +1,11 @@
+.git
+.github
+.env
+data
+dist
+node_modules
+test-data
+test.json
+coverage
+*.log
+**/*.test.ts
